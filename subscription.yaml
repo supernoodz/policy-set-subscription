@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: policy-generator-ocp-best-practices
+---
+apiVersion: app.k8s.io/v1beta1
+kind: Application
+metadata:
+  name: policy-generator-ocp-best-practices
+  namespace: policy-generator-ocp-best-practices
+spec:
+  componentKinds:
+    - group: apps.open-cluster-management.io
+      kind: Subscription
+  descriptor: {}
+  selector:
+    matchExpressions:
+      - key: app
+        operator: In
+        values:
+          - policy-generator-ocp-best-practices
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: Channel
+metadata:
+  annotations:
+    apps.open-cluster-management.io/reconcile-rate: medium
+  name: policy-generator-ocp-best-practices
+  namespace: policy-generator-ocp-best-practices
+spec:
+  type: Git
+  pathname: https://github.com/supernoodz/policy-set-subscription
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: Subscription
+metadata:
+  annotations:
+    apps.open-cluster-management.io/git-branch: main
+    apps.open-cluster-management.io/git-path: kustomize
+    apps.open-cluster-management.io/reconcile-option: merge
+  labels:
+    app: policy-generator-ocp-best-practices
+  name: policy-generator-ocp-best-practices-subscription
+  namespace: policy-generator-ocp-best-practices
+spec:
+  allow:
+    - apiVersion: policy.open-cluster-management.io/v1
+      kinds:
+        - "*"
+    - apiVersion: apps.open-cluster-management.io/v1
+      kinds:
+        - PlacementRule
+  channel: policy-generator-ocp-best-practices/policy-generator-ocp-best-practices
+  placement:
+    placementRef:
+      kind: PlacementRule
+      name: policy-generator-ocp-best-practices-placement
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  labels:
+    app: policy-generator-ocp-best-practices
+  name: policy-generator-ocp-best-practices-placement
+  namespace: policy-generator-ocp-best-practices
+spec:
+  clusterConditions:
+    - status: "True"
+      type: ManagedClusterConditionAvailable
+  clusterSelector:
+    matchExpressions:
+      - key: local-cluster
+        operator: In
+        values:
+          - "true"
