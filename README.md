@@ -1,4 +1,4 @@
-Subscribe clusters to Policy-Sets.
+## Subscribe clusters to Policy-Sets.
 
 oc apply -f <subscription_file>
 
