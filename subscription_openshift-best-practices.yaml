@@ -36,7 +36,7 @@ kind: Subscription
 metadata:
   annotations:
     apps.open-cluster-management.io/git-branch: main
-    apps.open-cluster-management.io/git-path: kustomize
+    apps.open-cluster-management.io/git-path: ocp-best-practices
     apps.open-cluster-management.io/reconcile-option: merge
   labels:
     app: policy-generator-ocp-best-practices
@@ -47,6 +47,12 @@ spec:
     - apiVersion: policy.open-cluster-management.io/v1
       kinds:
         - "*"
+    - apiVersion: cluster.open-cluster-management.io/v1beta1
+      kinds:
+        - Placement
+    - apiVersion: policy.open-cluster-management.io/v1beta1
+      kinds:
+        - PolicySet
     - apiVersion: apps.open-cluster-management.io/v1
       kinds:
         - PlacementRule
